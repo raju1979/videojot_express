@@ -1,5 +1,8 @@
 const express = require("express");
+
 const app = express();
+const path = require('path');
+
 
 const exphbs  = require('express-handlebars');
 
@@ -10,6 +13,22 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 
 const cors = require('cors');
+
+const url = require('url');
+
+const methodOverride = require('method-override');
+
+const flash = require('connect-flash');
+
+const session = require('express-session');
+
+const ideas = require("./routes/ideas");
+
+const users = require("./routes/users");
+
+// app.use(express.static(process.cwd() + '/public'));
+
+app.use('/', express.static(path.join(__dirname, 'public')))
 
 app.set("port", (process.env.port || 5000));
 
@@ -22,6 +41,27 @@ app.use(function(req, res, next) {
     next();
 })
 
+// override with POST having ?_method=DELETE
+app.use(methodOverride('_method'));
+
+//maintain express-session
+app.use(session({
+    secret:'secret',
+    resave:true,
+    saveUninitialized:true
+}));//
+
+app.use(flash());
+
+//global variable
+app.use(function(req,res,next) {
+    res.locals.success_msg = req.flash('success_msg');
+    res.locals.error_msg = req.flash('error_msg');
+    res.locals.error = req.flash('error');
+    next();
+})
+
+
 // app.use(cors);
 
 // parse application/x-www-form-urlencoded
@@ -30,7 +70,9 @@ app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
 app.use(bodyParser.json())
 
-mongoose.connect('mongodb://localhost/vidjot-dev', {
+var uri = "mongodb://localhost/vidjot-dev";
+
+mongoose.connect(uri, {
     useMongoClient:true
 })
     .then(() => {
@@ -40,9 +82,6 @@ mongoose.connect('mongodb://localhost/vidjot-dev', {
         console.log(err)
     })
 
-//Load idea model
-require('./models/idea');
-const Idea = mongoose.model('ideas');
 
 app.get("/english", (req, res) => {
     res.send(greetings.sayHelloInEnglish('Rajesh'));
@@ -64,34 +103,10 @@ app.get("/about", (req, res) => {
     res.render('about');
 })
 
-app.post("/ideas",(req,res) => {
-    let errors = [];
+//use routes
+app.use("/ideas",ideas);
 
-    if(!req.body.title){
-        errors.push({text:"Please add a title"});
-    }
-    if(!req.body.details){
-        errors.push({text:"Please add some details"});
-    }
-
-    if(errors.length > 0){
-        res.render('ideas/add',{
-            errors:errors,
-            title:req.body.title,
-            details:req.body.details
-        })
-    }else{
-        res.send('passed');
-    }
-
-
-})
-
-app.get("/ideas/add", (req,res) => {
-    res.render('ideas/add');
-    // console.log('djdj')
-})
-
+app.use("/users",users)
 
 app.listen(app.get('port'), function() {
     console.log(`App running on ${app.get('port')}`)

@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 //
 const IdeaSchema = new Schema({
 
-	tile:{
+	title:{
 		type:String,
 		required:true
 	},

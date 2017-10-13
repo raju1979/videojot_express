@@ -1,0 +1,18 @@
+<h1>Edit form</h1>
+<div class="card" card-body>
+
+	<h3>Video Idea</h3>
+	<form action="/ideas/{{data.id}}?_method=PUT" method="post">
+        <input type="hidden" name="_method" value="PUT">
+		<div class="form-group">
+			<label for="title">Title</label>
+			<input type="text" class="form-control" name="title" value = "{{data.title}}">
+		</div>
+		<div class="form-group">
+			<label for="title">Title</label>
+			<textarea class="form-control" name="details">{{data.details}}</textarea>
+		</div>
+		<button type="submit" class="btn btn-primary">Edit</button>
+	</form>
+
+</div>
