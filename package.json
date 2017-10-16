@@ -20,6 +20,7 @@
     "method-override": "^2.3.10",
     "mongoose": "^4.12.1",
     "passport": "^0.4.0",
+    "passport-local": "^1.0.0",
     "url": "^0.11.0"
   }
 }

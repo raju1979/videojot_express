@@ -17,8 +17,19 @@ const User = mongoose.model('users');
 //User login route
 
 router.get("/login", (req,res) => {
-    res.render('users/login');
+    res.render('users/login')
 })
+
+//Passport authentication on logon
+router.post('/login',(req,res,next) => {
+    console.log("posted",req.body);
+    passport.authenticate('local',{
+        successRedirct:'/ideas',
+        failureRedirect:'/users/login',
+        failureFlash:true
+    })(req,res,next)
+})
+
 
 
 //User register route
